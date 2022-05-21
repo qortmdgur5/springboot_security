@@ -1,6 +1,8 @@
 package com.cos.security1.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +31,7 @@ public class IndexController {
 	}
 	
 	@GetMapping("/user")
-	public String user() {
+	public @ResponseBody String user() {
 		return "user";
 	}
 	
@@ -39,7 +41,7 @@ public class IndexController {
 	}
 	
 	@GetMapping("/manager")
-	public String manager() {
+	public @ResponseBody String manager() {
 		return "manager";
 	}
 	
@@ -63,6 +65,18 @@ public class IndexController {
 		
 		userRepository.save(user);	//	회원가입은 되지만 시큐리티 로그인은 안됌. 비밀번호 암호화를 안해주었기 때문
 		return "redirect:/loginForm";
+	}
+	
+	@Secured("ROLE_ADMIN")
+	@GetMapping("/info")
+	public @ResponseBody String info() {
+		return "개인정보";
+	}
+	
+	@PreAuthorize("hasRole('ROLE_MANAGER') or hasRole('ROLE_ADMIN')")
+	@GetMapping("/data")
+	public @ResponseBody String data() {
+		return "데이터정보";
 	}
 
 }
